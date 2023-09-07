@@ -3,9 +3,9 @@ spring:
     name: listplus-api-user
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${LISTPLUS_API_USER_DB_URL:jdbc:mysql://localhost:3306/listplus_api_user}
-    username: ${LISTPLUS_API_USER_DB_USERNAME:listplus}
-    password: ${LISTPLUS_API_USER_DB_PASSWORD:listplus}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/listplus_api_user}
+    username: ${DB_USERNAME:listplus}
+    password: ${DB_PASSWORD:listplus}
   jpa:
     show-sql: true
     hibernate:
@@ -20,12 +20,12 @@ spring:
 
 kafka:
   broker:
-    host: localhost
-    port: 29092
+    host: ${KAFKA_BROKER_HOST:localhost}
+    port: ${KAFKA_BROKER_PORT:9092}
   topics:
-    user: users
+    user: ${KAFKA_BROKER_USERS_TOPIC:users}
   groups:
-    user: users
+    user: ${KAFKA_BROKER_USERS_GROUP:users}
 
 server:
   port: 8081

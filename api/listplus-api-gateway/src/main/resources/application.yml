@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: listplus-api-gateway
+
+kafka:
+  broker:
+    host: ${KAFKA_BROKER_HOST:localhost}
+    port: ${KAFKA_BROKER_PORT:9092}
+  topics:
+    user: ${KAFKA_BROKER_USERS_TOPIC:users}
+
+client:
+  user-service:
+    url: ${USER_SERVICE_URL:http://localhost:8081/listplus-api-user-service/v1}
+    timeout: 10
+
+server:
+  port: 8080
+  servlet:
+    context-path: /listplus/api/v1

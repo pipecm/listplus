@@ -1,0 +1,81 @@
+version: '3.7'
+
+services:
+    listplus-api-gateway:
+        container_name: listplus-api-gateway
+        restart: always
+        build:
+            context: api/listplus-api-gateway
+            dockerfile: docker/Dockerfile
+        ports:
+            - 8080:8080
+        environment:
+            USER_SERVICE_URL: http://listplus-api-user:8081/listplus-api-user-service/v1
+            KAFKA_BROKER_HOST: kafka
+            KAFKA_BROKER_PORT: 9092
+            KAFKA_BROKER_USERS_TOPIC: users
+    
+    listplus-api-user:
+        container_name: listplus-api-user
+        restart: always
+        build:
+            context: api/listplus-api-user
+            dockerfile: docker/Dockerfile
+        depends_on:
+            listplus-api-database:
+                condition: service_healthy
+        ports:
+            - 8081:8081
+        environment:
+            DB_URL: jdbc:mysql://listplus-api-database:3306/listplus_api_user
+            DB_USERNAME: listplus
+            DB_PASSWORD: listplus
+            KAFKA_BROKER_HOST: kafka
+            KAFKA_BROKER_PORT: 9092
+            KAFKA_BROKER_USERS_TOPIC: users
+            KAFKA_BROKER_USERS_GROUP: users
+
+    listplus-api-database:
+        image: mysql
+        restart: always
+        command: --default-authentication-plugin=mysql_native_password
+        environment:
+            MYSQL_ROOT_PASSWORD: lpadmin
+            MYSQL_DATABASE: listplus_api_user
+            MYSQL_USER: listplus
+            MYSQL_PASSWORD: listplus
+        ports:
+            - 3306:3306
+        volumes:
+            - ../src/main/resources/database:/docker-entrypoint-initdb.d
+        healthcheck:
+            test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+            timeout: 20s
+            retries: 10
+    
+    zookeeper:
+        container_name: zookeeper
+        restart: always
+        image: confluentinc/cp-zookeeper:latest
+        environment:
+            ZOOKEEPER_CLIENT_PORT: 2181
+            ZOOKEEPER_TICK_TIME: 2000
+        ports:
+            - 2181:2181
+
+    kafka:
+        container_name: kafka
+        restart: always
+        image: confluentinc/cp-kafka:latest
+        depends_on:
+            - zookeeper
+        ports:
+            - 9092:9092
+        environment:
+            KAFKA_BROKER_ID: 1
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+            KAFKA_CREATE_TOPICS: "users"
