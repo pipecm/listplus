@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  listplus-api-user:
+    container_name: listplus-api-user
+    restart: always
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    depends_on:
+      listplus-api-database:
+        condition: service_healthy
+    ports:
+      - 8081:8081
+    environment:
+      LISTPLUS_API_USER_DB_URL: jdbc:mysql://listplus-api-database:3306/listplus_api_user
+      LISTPLUS_API_USER_DB_USERNAME: listplus
+      LISTPLUS_API_USER_DB_PASSWORD: listplus
+
+  listplus-api-database:
+    image: mysql
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: lpadmin
+      MYSQL_DATABASE: listplus_api_user
+      MYSQL_USER: listplus
+      MYSQL_PASSWORD: listplus
+    ports:
+      - 3306:3306
+    volumes:
+      - ../src/main/resources/database:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
