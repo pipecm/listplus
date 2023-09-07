@@ -22,12 +22,12 @@ services:
             context: api/listplus-api-user
             dockerfile: docker/Dockerfile
         depends_on:
-            listplus-api-database:
+            listplus-api-user-database:
                 condition: service_healthy
         ports:
             - 8081:8081
         environment:
-            DB_URL: jdbc:mysql://listplus-api-database:3306/listplus_api_user
+            DB_URL: jdbc:mysql://listplus-api-user-database:3306/listplus_api_user
             DB_USERNAME: listplus
             DB_PASSWORD: listplus
             KAFKA_BROKER_HOST: kafka
@@ -35,7 +35,8 @@ services:
             KAFKA_BROKER_USERS_TOPIC: users
             KAFKA_BROKER_USERS_GROUP: users
 
-    listplus-api-database:
+    listplus-api-user-database:
+        container_name: listplus-api-user-database
         image: mysql
         restart: always
         command: --default-authentication-plugin=mysql_native_password
@@ -47,7 +48,7 @@ services:
         ports:
             - 3306:3306
         volumes:
-            - ../src/main/resources/database:/docker-entrypoint-initdb.d
+            - ./api/listplus-api-user/src/main/resources/database:/docker-entrypoint-initdb.d
         healthcheck:
             test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
             timeout: 20s
@@ -55,7 +56,6 @@ services:
     
     zookeeper:
         container_name: zookeeper
-        restart: always
         image: confluentinc/cp-zookeeper:latest
         environment:
             ZOOKEEPER_CLIENT_PORT: 2181
@@ -65,7 +65,6 @@ services:
 
     kafka:
         container_name: kafka
-        restart: always
         image: confluentinc/cp-kafka:latest
         depends_on:
             - zookeeper
@@ -74,8 +73,9 @@ services:
         environment:
             KAFKA_BROKER_ID: 1
             KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
             KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
             KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
             KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
             KAFKA_CREATE_TOPICS: "users"
+
