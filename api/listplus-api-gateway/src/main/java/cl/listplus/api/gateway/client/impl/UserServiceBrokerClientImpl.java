@@ -7,6 +7,7 @@ import cl.listplus.api.gateway.events.EventType;
 import cl.listplus.api.gateway.events.UserEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class UserServiceBrokerClientImpl implements UserServiceBrokerClient {
     }
 
     @Override
+    @Async
     public void createUser(UserRequest userRequest) {
         UserEvent userEvent = new UserEvent();
         userEvent.setId(UUID.randomUUID().toString());

@@ -7,6 +7,7 @@ import cl.listplus.api.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -27,7 +28,7 @@ public class UserListener {
     @KafkaListener(topics = "${kafka.topics.user:users}",
             containerFactory = "kafkaListenerContainerFactory",
             groupId = "${kafka.groups.user:users}")
-    public void receive(Event<?> event) {
+    public void receive(@Payload Event<?> event) {
         if (event.getClass().isAssignableFrom(UserEvent.class)) {
             UserEvent userEvent = (UserEvent) event;
             userEvent.setReceivedAt(LocalDateTime.now());

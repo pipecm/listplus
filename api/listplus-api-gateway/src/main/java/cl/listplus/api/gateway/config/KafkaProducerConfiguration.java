@@ -31,6 +31,8 @@ public class KafkaProducerConfiguration {
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, String.format(BOOTSTRAP_ADDRESS, host, port));
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        properties.put(JsonSerializer.TYPE_MAPPINGS, "event:cl.listplus.api.gateway.events.Event, user_event:cl.listplus.api.gateway.events.UserEvent");
+
         return new DefaultKafkaProducerFactory<>(properties);
     }
 

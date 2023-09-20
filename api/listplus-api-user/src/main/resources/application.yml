@@ -21,7 +21,7 @@ spring:
 kafka:
   broker:
     host: ${KAFKA_BROKER_HOST:localhost}
-    port: ${KAFKA_BROKER_PORT:9092}
+    port: ${KAFKA_BROKER_PORT:9093}
   topics:
     user: ${KAFKA_BROKER_USERS_TOPIC:users}
   groups:
