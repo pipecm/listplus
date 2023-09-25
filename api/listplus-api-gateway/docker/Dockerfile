@@ -1,7 +1,7 @@
 FROM eclipse-temurin:latest as build
 ADD . /app
 WORKDIR /app
-RUN ./mvnw clean verify install
+RUN ./gradlew clean build
 
 FROM eclipse-temurin:latest as service
 COPY --from=build /app/target/gateway-0.0.1-SNAPSHOT.jar /app/listplus-api-gateway-0.0.1-SNAPSHOT.jar

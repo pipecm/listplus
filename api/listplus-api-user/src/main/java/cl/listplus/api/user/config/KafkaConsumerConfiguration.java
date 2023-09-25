@@ -42,7 +42,7 @@ public class KafkaConsumerConfiguration {
         properties.put(JsonDeserializer.TYPE_MAPPINGS,
                 "event:cl.listplus.api.user.events.Event, user_event:cl.listplus.api.user.events.UserEvent");
 
-        return new DefaultKafkaConsumerFactory<>(properties); //, new StringDeserializer(), jsonDeserializer);
+        return new DefaultKafkaConsumerFactory<>(properties);
     }
 
     @Bean

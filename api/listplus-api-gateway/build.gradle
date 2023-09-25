@@ -1,0 +1,31 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.1.4'
+	id 'io.spring.dependency-management' version '1.1.3'
+}
+
+group = 'cl.listplus.api'
+version = '0.0.1-SNAPSHOT'
+description = 'listplus-api-gateway'
+
+java {
+	sourceCompatibility = '20'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter:3.1.3'
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.1.3'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux:3.1.3'
+    implementation 'org.springframework.kafka:spring-kafka:3.0.10'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.1.3'
+    compileOnly 'org.projectlombok:lombok:1.18.28'
+	annotationProcessor 'org.projectlombok:lombok:1.18.28'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
