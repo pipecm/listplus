@@ -29,7 +29,7 @@ public class KafkaConsumerConfiguration {
     @Value("${kafka.broker.host:localhost}")
     private String host;
 
-    @Value("${kafka.broker.port:9093}")
+    @Value("${kafka.broker.port:9092}")
     private String port;
 
     @Bean
