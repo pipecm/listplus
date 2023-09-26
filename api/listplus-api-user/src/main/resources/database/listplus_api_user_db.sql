@@ -29,11 +29,18 @@ INSERT INTO lp_user VALUES (UUID(), "listplusadmin", "admin@listplus.cl", "admin
 
 DELIMITER //
 
-CREATE TRIGGER lp_user_last_update
-AFTER UPDATE ON lp_user
-FOR EACH ROW
+CREATE TRIGGER `lp_user_on_insert`
+BEFORE INSERT ON `lp_user` FOR EACH ROW
 BEGIN
-	UPDATE lp_user SET user_last_updated_on = CURRENT_TIMESTAMP() WHERE OLD.user_id = NEW.user_id;
+    DECLARE timestamp_now TIMESTAMP;
+    SELECT CURRENT_TIMESTAMP() INTO timestamp_now;
+	SET NEW.user_created_on = timestamp_now, NEW.user_last_updated_on = timestamp_now, NEW.user_active = 1;
+END;//
+
+CREATE TRIGGER `lp_user_on_update`
+BEFORE UPDATE ON `lp_user` FOR EACH ROW
+BEGIN
+	SET NEW.user_created_on = OLD.user_created_on, NEW.user_last_updated_on = CURRENT_TIMESTAMP();
 END;//
 
 DELIMITER ;

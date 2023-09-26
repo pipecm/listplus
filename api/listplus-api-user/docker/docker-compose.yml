@@ -8,16 +8,16 @@ services:
       context: ../
       dockerfile: docker/Dockerfile
     depends_on:
-      listplus-api-database:
+      listplus-api-user-database:
         condition: service_healthy
     ports:
       - 8081:8081
     environment:
-      LISTPLUS_API_USER_DB_URL: jdbc:mysql://listplus-api-database:3306/listplus_api_user
+      LISTPLUS_API_USER_DB_URL: jdbc:mysql://listplus-api-user-database:3306/listplus_api_user
       LISTPLUS_API_USER_DB_USERNAME: listplus
       LISTPLUS_API_USER_DB_PASSWORD: listplus
 
-  listplus-api-database:
+  listplus-api-user-database:
     image: mysql
     restart: always
     command: --default-authentication-plugin=mysql_native_password

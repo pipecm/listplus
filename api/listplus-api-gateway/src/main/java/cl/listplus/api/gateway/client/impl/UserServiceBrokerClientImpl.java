@@ -28,10 +28,26 @@ public class UserServiceBrokerClientImpl implements UserServiceBrokerClient {
     @Override
     @Async
     public void createUser(UserRequest userRequest) {
+        sendEvent(EventType.CREATE, userRequest);
+    }
+
+    @Override
+    @Async
+    public void updateUser(UserRequest userRequest) {
+        sendEvent(EventType.UPDATE, userRequest);
+    }
+
+    @Override
+    @Async
+    public void deleteUser(UserRequest userRequest) {
+        sendEvent(EventType.DELETE, userRequest);
+    }
+
+    private void sendEvent(EventType eventType, UserRequest userRequest) {
         UserEvent userEvent = new UserEvent();
         userEvent.setId(UUID.randomUUID().toString());
         userEvent.setSentAt(LocalDateTime.now());
-        userEvent.setType(EventType.CREATE);
+        userEvent.setType(eventType);
         userEvent.setData(userRequest);
 
         kafkaTemplate.send(topic, userEvent);

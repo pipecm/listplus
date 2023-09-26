@@ -11,11 +11,13 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserServiceRestClientImpl implements UserServiceRestClient {
 
-    private static final String USERS_ENDPOINT = "/users?%s";
+    private static final String USER_BY_ID_ENDPOINT = "/users/%s";
+    private static final String USERS_BY_FILTERS_ENDPOINT = "/users?%s";
     private static final String USERNAME_FILTER_URI = "username=%s";
     private static final String EMAIL_FILTER_URI = "email=%s";
 
@@ -28,22 +30,20 @@ public class UserServiceRestClientImpl implements UserServiceRestClient {
     }
 
     @Override
-    public Mono<User> retrieveUser(UserRequest userRequest) {
+    public Mono<User> retrieveUser(UUID id) {
         return userServiceWebClient.get()
-                .uri(buildRetrieveUserUri(userRequest))
+                .uri(String.format(USER_BY_ID_ENDPOINT, id.toString()))
                 .retrieve()
                 .bodyToMono(User.class)
                 .timeout(Duration.ofSeconds(userServiceParameters.getTimeout()));
     }
 
     @Override
-    public Mono<Boolean> userAlreadyExists(UserRequest userRequest) {
+    public Mono<User> retrieveUser(UserRequest userRequest) {
         return userServiceWebClient.get()
                 .uri(buildRetrieveUserUri(userRequest))
                 .retrieve()
                 .bodyToMono(User.class)
-                .map(user -> true)
-                .onErrorResume(e -> Mono.just(false))
                 .timeout(Duration.ofSeconds(userServiceParameters.getTimeout()));
     }
 
@@ -64,7 +64,7 @@ public class UserServiceRestClientImpl implements UserServiceRestClient {
                     return "";
                 })
                 .reduce((f1, f2) -> String.join("&", f1, f2))
-                .map(filters -> String.format(USERS_ENDPOINT, filters))
+                .map(filters -> String.format(USERS_BY_FILTERS_ENDPOINT, filters))
                 .orElse("");
     }
 }

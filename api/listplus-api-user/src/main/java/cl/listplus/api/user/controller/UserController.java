@@ -8,10 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Stream;
 
-import static cl.listplus.api.user.repository.UserSpecifications.hasEmail;
-import static cl.listplus.api.user.repository.UserSpecifications.hasUsername;
+import static cl.listplus.api.user.repository.UserSpecifications.*;
 
 @RestController
 @RequestMapping("/users")
@@ -23,9 +23,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<?> retrieveUserByUsername(@PathVariable String username) {
-        return ResponseEntity.ok().body(userService.retrieveUser(hasUsername(username)));
+    @GetMapping("/{id}")
+    public ResponseEntity<?> retrieveUserById(@PathVariable UUID id) {
+        return ResponseEntity.ok().body(userService.retrieveUser(hasId(id)));
     }
 
     @GetMapping

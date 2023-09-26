@@ -10,7 +10,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -39,7 +38,7 @@ public class UserServiceImpl implements UserService {
                 .findFirst()
                 .ifPresentOrElse(
                         user -> { throw new UserServiceException(HttpStatus.CONFLICT, "User already exists"); },
-                        () -> save(userRequest)
+                        () -> userRepository.save(userMapper.map(userRequest))
                 );
     }
 
@@ -47,7 +46,7 @@ public class UserServiceImpl implements UserService {
     public void updateUser(UserRequest userRequest) {
         userRepository.findById(userRequest.getId())
                 .ifPresentOrElse(
-                        user -> save(userRequest),
+                        user -> userRepository.save(userMapper.map(userRequest)),
                         () -> { throw new UserServiceException(HttpStatus.NOT_FOUND, "User does not exist"); }
                 );
     }
@@ -60,15 +59,4 @@ public class UserServiceImpl implements UserService {
                         () -> { throw new UserServiceException(HttpStatus.NOT_FOUND, "User does not exist"); }
                 );
     }
-
-    private void save(UserRequest userRequest) {
-        LocalDateTime now = LocalDateTime.now();
-        if (Objects.isNull(userRequest.getCreatedOn())) {
-            userRequest.setCreatedOn(now);
-            userRequest.setActive(true);
-        }
-        userRequest.setLastUpdatedOn(now);
-        userRepository.save(userMapper.map(userRequest));
-    }
 }
-
