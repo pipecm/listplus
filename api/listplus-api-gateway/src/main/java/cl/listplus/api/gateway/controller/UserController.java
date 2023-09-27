@@ -58,4 +58,10 @@ public class UserController {
         return userService.updateUser(userRequest)
                 .map(userResponse -> ResponseEntity.status(userResponse.getHttpStatus()).body(userResponse));
     }
+
+    @DeleteMapping("/{id}")
+    public Mono<ResponseEntity<UserResponse>> deleteUser(@PathVariable UUID id) {
+        return userService.deleteUser(UserRequest.builder().id(id).build())
+                .map(userResponse -> ResponseEntity.status(userResponse.getHttpStatus()).body(userResponse));
+    }
 }

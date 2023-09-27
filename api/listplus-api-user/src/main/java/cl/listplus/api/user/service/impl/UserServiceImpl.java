@@ -9,6 +9,7 @@ import cl.listplus.api.user.service.UserService;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -26,8 +27,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User retrieveUser(Specification<User> specification) {
-        return userRepository.findAll(specification)
-                .stream().findFirst()
+        return userRepository.findAll(specification).stream()
+                .findFirst()
                 .orElseThrow(() -> new UserServiceException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
@@ -55,8 +56,13 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(UUID id) {
         userRepository.findById(id)
                 .ifPresentOrElse(
-                        user -> userRepository.deleteById(user.getId()),
+                        user -> userRepository.save(deactivate(user)),
                         () -> { throw new UserServiceException(HttpStatus.NOT_FOUND, "User does not exist"); }
                 );
+    }
+
+    private User deactivate(User user) {
+        user.setActive(false);
+        return user;
     }
 }

@@ -4,6 +4,7 @@ import cl.listplus.api.gateway.client.UserServiceParameters;
 import cl.listplus.api.gateway.client.UserServiceRestClient;
 import cl.listplus.api.gateway.domain.User;
 import cl.listplus.api.gateway.domain.UserRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -20,6 +21,7 @@ public class UserServiceRestClientImpl implements UserServiceRestClient {
     private static final String USERS_BY_FILTERS_ENDPOINT = "/users?%s";
     private static final String USERNAME_FILTER_URI = "username=%s";
     private static final String EMAIL_FILTER_URI = "email=%s";
+    private static final String CHARACTER_AMPERSAND = "&";
 
     private final WebClient userServiceWebClient;
     private final UserServiceParameters userServiceParameters;
@@ -49,9 +51,9 @@ public class UserServiceRestClientImpl implements UserServiceRestClient {
 
     private String buildRetrieveUserUri(UserRequest userRequest) {
         return Map.of(UserRequest.Fields.username,
-                        Optional.ofNullable(userRequest).map(UserRequest::getUsername).orElse(""),
+                        Optional.ofNullable(userRequest).map(UserRequest::getUsername).orElse(StringUtils.EMPTY),
                         UserRequest.Fields.email,
-                        Optional.ofNullable(userRequest).map(UserRequest::getEmail).orElse(""))
+                        Optional.ofNullable(userRequest).map(UserRequest::getEmail).orElse(StringUtils.EMPTY))
                 .entrySet()
                 .stream()
                 .filter(entry -> !entry.getValue().isBlank())
@@ -61,11 +63,11 @@ public class UserServiceRestClientImpl implements UserServiceRestClient {
                     } else if (UserRequest.Fields.email.equals(entry.getKey())) {
                         return String.format(EMAIL_FILTER_URI, entry.getValue());
                     }
-                    return "";
+                    return StringUtils.EMPTY;
                 })
-                .reduce((f1, f2) -> String.join("&", f1, f2))
+                .reduce((f1, f2) -> String.join(CHARACTER_AMPERSAND, f1, f2))
                 .map(filters -> String.format(USERS_BY_FILTERS_ENDPOINT, filters))
-                .orElse("");
+                .orElse(StringUtils.EMPTY);
     }
 }
 
