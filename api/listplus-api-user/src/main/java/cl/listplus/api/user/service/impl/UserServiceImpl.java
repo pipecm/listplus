@@ -9,7 +9,6 @@ import cl.listplus.api.user.service.UserService;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import jakarta.transaction.Transactional;
 
 import java.util.Objects;
 import java.util.UUID;
